@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/backend1/:path*",
+      "destination": "http://52.205.204.241/backend1/:path*"
+    },
+    {
+      "source": "/api/backend2/:path*",
+      "destination": "http://52.205.204.241/backend2/:path*"
+    },
+    {
+      "source": "/api/backend3/:path*",
+      "destination": "http://52.205.204.241/backend3/:path*"
+    }
+  ]
+}

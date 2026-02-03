@@ -1,0 +1,47 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_db3
+    restart: always
+    command: --max_allowed_packet=67108864 --innodb_buffer_pool_size=268435456
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: maintenance_data
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_password
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - app_network
+
+  fastapi:
+    build: .
+    container_name: fastapi_app3
+    restart: always
+    ports:
+      - "8003:8000"
+    environment:
+      MYSQL_USER: root
+      MYSQL_PASSWORD: password
+      MYSQL_HOST: mysql_db3
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: maintenance_data
+      DB_RETRY_ATTEMPTS: 15
+      DB_RETRY_DELAY: 10
+    depends_on:
+      - mysql
+    volumes:
+      - ./uploads:/app/uploads
+      - ./models:/app/models
+    networks:
+      - app_network
+
+volumes:
+  mysql_data:
+
+networks:
+  app_network:
+    driver: bridge
